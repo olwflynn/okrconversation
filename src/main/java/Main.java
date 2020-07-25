@@ -2,6 +2,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.UUID;
 import org.elasticsearch.client.*;
 
@@ -40,22 +41,22 @@ public class Main {
 
         }
 
+        // Write notes with contributor id
         if (source.substring(0,3).equals("-g ")) {
-            String inputName = source.substring(3);
-            checkContributorExists(inputName);
-
+            String inputId = source.substring(3);
+            UUID uuid = UUID.fromString(inputId);
+            Contributor contributor = leader.getContributorFromId(uuid);
+            if (contributor != null) {
+                writeNotes(contributor);
+            }
         }
 
+        // Write notes with contributor name
         if (source.substring(0,2).equals("-c")) {
             String inputName = source.substring(2);
             Contributor contributor = checkContributorExists(inputName);
             if (contributor != null) {
-                System.out.print("Thanks! Now write your conversation notes here: ");
-                InputStreamReader input = new InputStreamReader(System.in);
-                BufferedReader reader = new BufferedReader(input);
-                String conversationText = reader.readLine();
-                Conversation conversation = leader.addConversation(conversationText, contributor);
-                System.out.println("Added your conversation '" + conversation.uuid + "' with " + contributor.name + ".");
+                writeNotes(contributor);
             }
 
         }
@@ -94,10 +95,30 @@ public class Main {
 
         } catch (NullPointerException ex) {
 
-            String contributorES = leader.getContributorFromES(inputName.trim());
-            System.out.println(contributorES+ "------");
-            System.out.println("Contributor: '" + inputName.trim() + "' does not exist.");
+            List<String> contributorIdPairsES = leader.getContributorAndIdFromES(inputName.trim());
+            if (contributorIdPairsES.isEmpty()) {
+                System.out.println("Contributor: '" + inputName.trim() + "' does not exist.");
+                return null;
+            } else {
+                System.out.println("It seems you have a few contributors with the same id. Please choose which one you " +
+                        "mean by their id and then use the `-g {id}` command write their notes...");
+                for (String pair : contributorIdPairsES) System.out.println(pair);
+                return null;
+            }
         }
-        return null;
+
+    }
+
+    private static void writeNotes(Contributor contributor) {
+        System.out.print("Thanks! Now write your conversation notes here: ");
+        InputStreamReader input = new InputStreamReader(System.in);
+        BufferedReader reader = new BufferedReader(input);
+        try {
+            String conversationText = reader.readLine();
+            Conversation conversation = leader.addConversation(conversationText, contributor);
+            System.out.println("Added your conversation '" + conversation.uuid + "' with " + contributor.name + ".");
+        } catch (IOException ex) {
+            System.out.println("readline IO: " + ex);
+        }
     }
 }

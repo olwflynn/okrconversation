@@ -5,8 +5,8 @@ public class Contributor {
     public String name;
     public UUID uuid;
 
-    Contributor(String name) {
+    Contributor(String name, UUID uuid ) {
         this.name = name;
-        this.uuid = UUID.randomUUID();
+        this.uuid = uuid;
     }
 }
