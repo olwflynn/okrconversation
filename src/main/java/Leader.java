@@ -50,7 +50,6 @@ public class Leader {
 
         GetRequest getRequest = new GetRequest("contributors", uuid.toString());
         GetResponse getResponse = connection.get(getRequest);
-        System.out.println(getResponse);
         Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
         String contributorName = (String) sourceAsMap.get("name");
         Contributor contributor = new Contributor(contributorName, uuid);
@@ -80,9 +79,11 @@ public class Leader {
         return null;
     }
 
-    public Conversation addConversation(String conversationText, Contributor contributor) {
-        Conversation newConversation = new Conversation(conversationText, contributor);
-        conversations.put(newConversation.uuid, newConversation);
+    public Conversation addConversation(String conversationText, Contributor contributor, String conversationTypeString) {
+        Conversation newConversation = new Conversation(conversationText, contributor, UUID.randomUUID(),
+                ConversationType.valueOf(conversationTypeString));
+//        conversations.put(newConversation.uuid, newConversation);
+        System.out.println(newConversation);
         IndexRequest indexRequest = connection.buildIndexRequest(newConversation, "conversations");
         IndexResponse indexResponse = connection.index(indexRequest);
         return newConversation;

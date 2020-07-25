@@ -67,7 +67,7 @@ public class Main {
                 UUID uuid = UUID.fromString(inputStringUUID);
                 Conversation conversation = leader.getConversation(uuid);
                 if (conversation != null) {
-                    System.out.println("Here is your conversation with " + conversation.contributor.name + ": " + conversation.conversationText);
+                    System.out.println("Here is your conversation with " + conversation.contributorId + ": " + conversation.conversationText);
                 }
             } catch (IllegalArgumentException ex) {
                 System.out.println("Conversation " + inputStringUUID + " does not exist.");
@@ -110,15 +110,37 @@ public class Main {
     }
 
     private static void writeNotes(Contributor contributor) {
-        System.out.print("Thanks! Now write your conversation notes here: ");
-        InputStreamReader input = new InputStreamReader(System.in);
-        BufferedReader reader = new BufferedReader(input);
+        System.out.println("Thanks! Please choose the type of conversation you aim to have from the options below: ");
+        for (ConversationType type : ConversationType.values()) {
+            System.out.print(type.toString() + "\n");
+        }
+        InputStreamReader inputType = new InputStreamReader(System.in);
+        BufferedReader readerType = new BufferedReader(inputType);
+
+//        switch(myVar) {
+//            case LOW:
+//                System.out.println("Low level");
+//                break;
+//            case MEDIUM:
+//                System.out.println("Medium level");
+//                break;
+//            case HIGH:
+//                System.out.println("High level");
+//                break;
+//        }
+
         try {
-            String conversationText = reader.readLine();
-            Conversation conversation = leader.addConversation(conversationText, contributor);
-            System.out.println("Added your conversation '" + conversation.uuid + "' with " + contributor.name + ".");
-        } catch (IOException ex) {
-            System.out.println("readline IO: " + ex);
+            String conversationTypeString = readerType.readLine();
+
+            System.out.print("Thanks! Now write your conversation notes here: ");
+            InputStreamReader inputText = new InputStreamReader(System.in);
+            BufferedReader readerText = new BufferedReader(inputText);
+            String conversationText = readerText.readLine();
+            Conversation conversation = leader.addConversation(conversationText, contributor, conversationTypeString);
+            System.out.println("Added your conversation '" + conversation.uuid + "' with " + contributor.name + " and " +
+                    "conversationType: " + conversationTypeString);
+            } catch (IOException ex) {
+                System.out.println("readline IO: " + ex);
         }
     }
 }

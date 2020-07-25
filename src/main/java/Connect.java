@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
@@ -6,13 +7,17 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.Index;
 import org.elasticsearch.action.search.*;
+import org.elasticsearch.index.mapper.ObjectMapper;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import com.fasterxml.jackson.databind.*;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,26 +54,31 @@ public class Connect {
 
         RestHighLevelClient connection = makeConnection();
 
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
-        // Change the fields that you are putting in e.g. need to be putting in the object Contributor
-        // Change the indexxx name
-        Map<String, Object> jsonMap = new HashMap();
-        if (data instanceof Conversation) {
-            jsonMap.put("conversationText", ((Conversation) data).conversationText);
-            jsonMap.put("contributorId", ((Conversation) data).contributor.uuid.toString());
+        try {
 
+            Class<?> classObject = data.getClass();
+            Field field = classObject.getField("uuid"); //Note, this can throw an exception if the field doesn't exist.
+            Object uuid = field.get(data);
+
+            String dataString = mapper.writeValueAsString(data);
+            System.out.println(dataString);
             IndexRequest indexRequest = new IndexRequest(indexName)
-                    .id(((Conversation) data).uuid.toString()).source(jsonMap);
+                    .id(uuid.toString()).source(dataString, XContentType.JSON);
+            System.out.println(indexRequest);
             return indexRequest;
+
+        } catch (JsonProcessingException exJson) {
+            System.out.println("Couldn't handle Json conversion " + exJson);
+
+        } catch (NoSuchFieldException exField) {
+            System.out.println("No uuid field in class: " + exField);
+
+        } catch (IllegalAccessException exAccess) {
+            System.out.println("Not allowed to access uuid field: "+ exAccess);
         }
 
-        if (data instanceof Contributor) {
-            jsonMap.put("name", ((Contributor) data).name);
-
-            IndexRequest indexRequest = new IndexRequest(indexName)
-                    .id(((Contributor) data).uuid.toString()).source(jsonMap);
-            return indexRequest;
-        }
         return null;
     }
 

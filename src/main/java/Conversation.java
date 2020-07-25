@@ -5,11 +5,13 @@ public class Conversation {
 
     public String conversationText;
     public UUID uuid;
-    public Contributor contributor;
+    public UUID contributorId;
+    public ConversationType conversationType;
 
-    Conversation(String conversationText, Contributor contributor) {
+    Conversation(String conversationText, Contributor contributor, UUID uuid, ConversationType conversationType) {
         this.conversationText = conversationText;
-        this.contributor = contributor;
-        this.uuid = UUID.randomUUID();
+        this.contributorId = contributor.uuid;
+        this.uuid = uuid;
+        this.conversationType = conversationType;
     }
 }
