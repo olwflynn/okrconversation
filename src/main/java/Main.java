@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.elasticsearch.client.*;
 
@@ -36,44 +37,56 @@ public class Main {
 
     private static void run(String source) throws IOException {
 
-        if (source.substring(0,2).equals("-n")) {
-            leader.addContributor(source.substring(2).trim());
+        Scanner scanner = new Scanner(source);
+        InputCommand inputCommand = scanner.scanCommand();
+        String inputStatement = source.substring(scanner.current).trim();
 
-        }
+        System.out.println(inputCommand);
 
-        // Write notes with contributor id
-        if (source.substring(0,3).equals("-g ")) {
-            String inputId = source.substring(3);
-            UUID uuid = UUID.fromString(inputId);
-            Contributor contributor = leader.getContributorFromId(uuid);
-            if (contributor != null) {
-                writeNotes(contributor);
+        try {
+            switch (inputCommand) {
+                case ADD_CONTRIBUTOR:
+                    leader.addContributor(inputStatement);
+                    break;
+                case ADD_NOTES_BY_ID:
+                    String inputId = inputStatement;
+                    UUID ContributorUuid = UUID.fromString(inputId);
+                    try {
+                        Contributor contributor = leader.getContributorFromId(ContributorUuid);
+                        writeNotes(contributor);
+                    } catch (NullPointerException ex) {
+                        System.out.println("We can't find a contributor associated with that id. Sorry!");
+                    }
+                    break;
+                case ADD_NOTES_BY_NAME:
+                    String inputName = inputStatement;
+                    try {
+                        Contributor contributor = checkContributorExists(inputName);
+                        if (contributor != null) {
+                            writeNotes(contributor);
+                        }
+                    } catch (NullPointerException ex) {
+                        // This is already being caught in the checkContributorExists function above. Maybe should be
+                        // consistent with the other cases
+                    }
+                    break;
+                case GET_NOTES_BY_ID:
+                    String inputStringUUID = inputStatement;
+                    try {
+                        UUID ConversationUuid = UUID.fromString(inputStringUUID);
+                        Map<String, Object> conversation = leader.getConversation(ConversationUuid);
+                        if (conversation != null) {
+                            System.out.println("Here is your conversation with " + conversation.get("uuid") + ": " +
+                                    conversation.get("conversationText"));
+                        }
+                    } catch (IllegalArgumentException ex) {
+                        System.out.println("Conversation " + inputStringUUID + " does not exist.");
+                    }
+
             }
+        } catch (NullPointerException ex) {
+            System.out.println("I'm not sure we understand that command. Can you please try again?!");
         }
-
-        // Write notes with contributor name
-        if (source.substring(0,2).equals("-c")) {
-            String inputName = source.substring(2);
-            Contributor contributor = checkContributorExists(inputName);
-            if (contributor != null) {
-                writeNotes(contributor);
-            }
-
-        }
-
-        if (source.substring(0,6).equals("-gconv")) {
-            String inputStringUUID = source.substring(6).trim();
-            try {
-                UUID uuid = UUID.fromString(inputStringUUID);
-                Conversation conversation = leader.getConversation(uuid);
-                if (conversation != null) {
-                    System.out.println("Here is your conversation with " + conversation.contributorId + ": " + conversation.conversationText);
-                }
-            } catch (IllegalArgumentException ex) {
-                System.out.println("Conversation " + inputStringUUID + " does not exist.");
-            }
-        }
-
 
         if (hadError) return;
 
@@ -101,7 +114,7 @@ public class Main {
                 return null;
             } else {
                 System.out.println("It seems you have a few contributors with the same id. Please choose which one you " +
-                        "mean by their id and then use the `-g {id}` command write their notes...");
+                        "mean by their id and then use the `-cid {id}` command write their notes...");
                 for (String pair : contributorIdPairsES) System.out.println(pair);
                 return null;
             }

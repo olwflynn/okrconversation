@@ -89,15 +89,11 @@ public class Leader {
         return newConversation;
     }
 
-    public Conversation getConversation(UUID uuid) {
-        if (conversations.containsKey(uuid)){
-            Conversation conversation = conversations.get(uuid);
-            GetRequest getRequest = new GetRequest("conversations", uuid.toString(),"test");
-            GetResponse getResponse = connection.get(getRequest);
-            return conversation;
-        }
-        return null;
-
+    public Map<String, Object> getConversation(UUID uuid) {
+        GetRequest getRequest = new GetRequest("conversations", uuid.toString());
+        GetResponse getResponse = connection.get(getRequest);
+        Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
+        return sourceAsMap;
     }
 
     private SearchHit[] getAllContributors() {
