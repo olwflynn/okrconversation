@@ -15,6 +15,7 @@ public class Main {
 
 
     private static final Leader leader = new Leader("Oli");
+    private Connect connection = new Connect();
 
     public Main(){
 

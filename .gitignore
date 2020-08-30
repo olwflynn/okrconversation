@@ -1,1 +1,5 @@
-/Users/oliver.flynn/okrconvmaven/target
+target/
+.idea/
+repo/
+.DS_Store
+

@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class Connect {
 
-    private static final String HOST = "localhost";
+    private static final String HOST = "127.0.0.1";
     private static final int PORT_ONE = 9200;
     private static final int PORT_TWO = 9201;
     private static final String SCHEME = "http";
@@ -32,6 +32,10 @@ public class Connect {
     private static RestHighLevelClient restHighLevelClient;
 
     private static final String INDEX = "customer";
+
+    public Connect() {
+        RestHighLevelClient restHighLevelClient = makeConnection();
+    }
 
     public static synchronized RestHighLevelClient makeConnection() {
 
@@ -51,8 +55,6 @@ public class Connect {
     }
 
     public static IndexRequest buildIndexRequest(Object data, String indexName) {
-
-        RestHighLevelClient connection = makeConnection();
 
         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
@@ -109,6 +111,7 @@ public class Connect {
 
     // This is only for match all queries
     public static SearchRequest buildSearchRequest(String indexName, Integer size, String field, String queryTerm) {
+
             SearchRequest searchRequest = new SearchRequest(indexName);
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
             MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder(field, queryTerm);
