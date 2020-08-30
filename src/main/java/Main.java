@@ -128,6 +128,7 @@ public class Main {
         for (ConversationType type : ConversationType.values()) {
             System.out.print(type.toString() + "\n");
         }
+        System.out.print("Type (exactly!) one of the above option here: ");
         InputStreamReader inputType = new InputStreamReader(System.in);
         BufferedReader readerType = new BufferedReader(inputType);
 
