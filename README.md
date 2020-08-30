@@ -10,8 +10,8 @@
 6. Type "-n {name of contributor}" to a new contributor for your first conversation
 
 
-Keywords/Instructions \n
-* -n {name of contributor} === add new contributor \n
-* -c {name of contributor} === add new conversation using contributor name \n
-* -cid {id of contributor} === add new conversation using contributor id \n
-* -gconv {id of conversation} === get conversation using conversation id \n
+Keywords/Instructions
+* -n {name of contributor} === add new contributor
+* -c {name of contributor} === add new conversation using contributor name
+* -cid {id of contributor} === add new conversation using contributor id
+* -gconv {id of conversation} === get conversation using conversation id
