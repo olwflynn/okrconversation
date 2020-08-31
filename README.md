@@ -13,6 +13,8 @@ There is much more that could be done but wanted to get some early feedback on i
 
 The current product is a text-based program which guides leaders/managers through their 1on1 conversations with their contributors and allows them to easily reference past conversations and categorise new ones into the key conversation types.
 
+https://user-images.githubusercontent.com/36010319/91711395-bb0f4180-eb7d-11ea-8547-8d5fb2855806.png
+
 1. Make sure you have docker and docker-compose downloaded
 2. Open terminal inside the application directory and run command "docker-compose up --build" to build the application and
     start the elasticsearch instance
