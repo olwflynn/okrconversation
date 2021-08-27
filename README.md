@@ -1,5 +1,7 @@
 # okrconversation
 
+Full medium artice - https://medium.com/@olwflynn/80-20-2-1on1-conversation-command-line-tool-6db711d52edc
+
 OKRs are a great framework for goal setting but we need to combine this with communication and teamwork to be able to execute on them.
 In an office setting how do we encourage this? Through conversations. It’s important to have continuous conversations between leaders and contributors, solicit feedback and give recognition. This drives alignment, productivity, trust and ultimately helps achieve business goals.
 
